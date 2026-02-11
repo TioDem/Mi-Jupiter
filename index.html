@@ -20,110 +20,96 @@ body{
     transition:1s;
 }
 
-/* CORAZÓN CENTRAL */
+/* CORAZÓN */
 .corazon{
-    width:140px;
-    height:140px;
-    background:#ff2e63;
+    width:140px;height:140px;background:#ff2e63;
     transform: rotate(-45deg);
     animation:latido 1.2s infinite;
     box-shadow:0 0 40px rgba(255,0,80,.8);
     position:relative;
 }
-.corazon::before,
-.corazon::after{
-    content:"";
-    width:140px;
-    height:140px;
-    background:#ff2e63;
-    border-radius:50%;
-    position:absolute;
-}
-.corazon::before{ top:-70px; left:0;}
-.corazon::after{ left:70px; top:0;}
+.corazon::before,.corazon::after{
+content:"";width:140px;height:140px;background:#ff2e63;border-radius:50%;position:absolute;}
+.corazon::before{top:-70px;}
+.corazon::after{left:70px;}
 
 @keyframes latido{
-    0%{transform:scale(1) rotate(-45deg);}
-    50%{transform:scale(1.15) rotate(-45deg);}
-    100%{transform:scale(1) rotate(-45deg);}
+0%{transform:scale(1) rotate(-45deg);}
+50%{transform:scale(1.15) rotate(-45deg);}
+100%{transform:scale(1) rotate(-45deg);}
 }
 
-/* TEXTOS */
 h1{margin-top:25px;font-size:2.2em;}
 #titulo{margin-top:20px;font-size:1.2em;}
+
 #contador{
-    margin-top:10px;
-    font-size:1.4em;
-    background:rgba(255,255,255,.15);
-    padding:15px 25px;
-    border-radius:15px;
+margin-top:10px;
+font-size:1.4em;
+background:rgba(255,255,255,.15);
+padding:15px 25px;
+border-radius:15px;
 }
 
 /* BOTONES */
-.botones{margin-top:20px;}
+.botones{margin-top:20px;position:relative;}
 button{
-    font-size:18px;
-    padding:12px 25px;
-    margin:10px;
-    border:none;
-    border-radius:30px;
-    cursor:pointer;
-    transition:.3s;
+font-size:18px;
+padding:12px 25px;
+margin:10px;
+border:none;
+border-radius:30px;
+cursor:pointer;
+transition:.2s;
+position:relative;
 }
+
 .si{background:#ff4d6d;color:white;}
-.no{background:#444;color:white;}
-button:hover{transform:scale(1.1);}
+.no{background:#444;color:white;position:absolute;}
 
 /* CORAZONES */
 .heart{
-    position:absolute;
-    bottom:-20px;
-    color:#ff1a4b;
-    animation:flotar linear forwards;
+position:absolute;
+bottom:-20px;
+color:#ff1a4b;
+animation:flotar linear forwards;
 }
 @keyframes flotar{
-    to{transform:translateY(-110vh);opacity:0;}
-}
-
-/* FLORES */
-.flor{
-    position:absolute;
-    bottom:-20px;
-    font-size:25px;
-    animation:flotar linear forwards;
+to{transform:translateY(-110vh);opacity:0;}
 }
 
 /* FUEGOS */
 .firework{
-    position:absolute;
-    font-size:25px;
-    animation:boom 1s forwards;
+position:absolute;
+font-size:25px;
+animation:boom 1s forwards;
 }
 @keyframes boom{
-    0%{transform:scale(.2);opacity:1;}
-    100%{transform:scale(2);opacity:0;}
+0%{transform:scale(.2);opacity:1;}
+100%{transform:scale(2);opacity:0;}
+}
+
+/* FLORES */
+.flor{
+position:absolute;
+bottom:-20px;
+font-size:25px;
+animation:flotar linear forwards;
 }
 
 /* GAME OVER */
 #gameover{
-    position:fixed;
-    inset:0;
-    background:black;
-    color:white;
-    display:none;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    font-size:40px;
-    z-index:999;
+position:fixed;inset:0;background:black;color:white;
+display:none;flex-direction:column;
+justify-content:center;align-items:center;
+font-size:40px;z-index:999;
 }
 .calavera{
-    font-size:80px;
-    animation:shake .6s infinite;
+font-size:80px;
+animation:shake .6s infinite;
 }
 @keyframes shake{
-    0%,100%{transform:translateX(0);}
-    50%{transform:translateX(10px);}
+0%,100%{transform:translateX(0);}
+50%{transform:translateX(10px);}
 }
 </style>
 </head>
@@ -137,9 +123,9 @@ button:hover{transform:scale(1.1);}
 <div id="titulo">Días que llevamos conociéndonos</div>
 <div id="contador"></div>
 
-<div class="botones">
+<div class="botones" id="areaBotones">
 <button class="si" onclick="respuestaSi()">Sí 💘</button>
-<button class="no" onclick="respuestaNo()">No 💀</button>
+<button class="no" id="noBtn">No 💀</button>
 </div>
 
 <audio id="musica" autoplay loop>
@@ -163,8 +149,7 @@ let m=Math.floor((d%3600000)/60000);
 let s=Math.floor((d%60000)/1000);
 contador.innerHTML=`${dias} días 💞 ${h} h ${m} m ${s} s`;
 }
-setInterval(actualizar,1000);
-actualizar();
+setInterval(actualizar,1000);actualizar();
 
 // CORAZONES
 function corazon(){
@@ -178,6 +163,21 @@ document.body.appendChild(e);
 setTimeout(()=>e.remove(),7000);
 }
 setInterval(corazon,800);
+
+// BOTON NO ESCAPA
+const noBtn=document.getElementById("noBtn");
+document.addEventListener("mousemove",e=>{
+let rect=noBtn.getBoundingClientRect();
+let dx=e.clientX-(rect.left+rect.width/2);
+let dy=e.clientY-(rect.top+rect.height/2);
+let dist=Math.sqrt(dx*dx+dy*dy);
+
+if(dist<120){
+let x=Math.random()*300-150;
+let y=Math.random()*200-100;
+noBtn.style.transform=`translate(${x}px,${y}px)`;
+}
+});
 
 // RESPUESTA SI
 function respuestaSi(){
@@ -193,7 +193,6 @@ setTimeout(()=>f.remove(),1000);
 },i*100);
 }
 
-// flores
 for(let i=0;i<15;i++){
 let flor=document.createElement("div");
 flor.className="flor";
@@ -204,16 +203,13 @@ document.body.appendChild(flor);
 setTimeout(()=>flor.remove(),7000);
 }
 
-// mensaje
 setTimeout(()=>alert("Sabía que dirías que sí 💖"),300);
 }
 
-// RESPUESTA NO
-function respuestaNo(){
-document.getElementById("gameover").style.display="flex";
-}
+// SI LOGRAN PRESIONAR NO
+noBtn.onclick=()=>{document.getElementById("gameover").style.display="flex";};
 
-// activar audio con click
+// activar audio
 document.addEventListener("click",()=>{
 document.getElementById("musica").play();
 },{once:true});
